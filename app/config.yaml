@@ -1,0 +1,18 @@
+scan_interval: 10
+login_timeout: 5
+cookie_ttl_seconds: 3600
+max_device_failures: 5
+device_check_interval: 15
+invalid_check_every_n_cycles: 50
+credentials:
+  - username: root
+    password: ubuntu
+  - username: root
+    password: 10011230
+
+process:
+  mode: debug
+  interface: eno1 # or enx72b1b1c1c8da
+  db_url: sqlite:///db/data/devices.db
+  db_path: db/data/devices.db
+  # public_ip: 192.168.0.3 # if known, otherwise it will be dynamically discovered

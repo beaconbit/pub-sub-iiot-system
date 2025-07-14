@@ -1,0 +1,6 @@
+**/data/*
+**/nats_data/*
+**/venv/*
+**/logs
+**/__pychache__/*
+

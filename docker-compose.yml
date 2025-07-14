@@ -1,0 +1,36 @@
+services:
+  nats:
+    image: nats:2.10
+    command: ["-js", "-m", "8222", "-store_dir", "/data/nats/jetstream"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - ./nats_data:/data/nats
+
+
+  # Python service that continually scrapes metrics and publishes them to NATS
+  metric_daemon:
+    build:
+      dockerfile: Dockerfile.python
+    network_mode: host
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    volumes:
+      - ./app/db/data:/app/db/data
+    command: ["/bin/bash", "entrypoint.sh"]
+    depends_on:
+      - nats
+    environment:
+      - APP_ENV=production  # Example: Pass environment variables to the container
+
+  sqlite_web:
+    image: coleifer/sqlite-web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app/db/data:/data
+    command: ["sqlite_web", "/data/devices.db"]
+    depends_on:
+      - metric_daemon
