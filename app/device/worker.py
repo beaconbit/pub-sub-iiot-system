@@ -106,7 +106,7 @@ class DeviceWorker(threading.Thread):
             already_published = False
             try:
                 logger.debug(f"fetching config for {mac} and {ip}")
-                record = self.config_repo.get_by_mac_and_index(mac, index)
+                record = self.config_repo.get_by_mac_and_index(mac, int(index))
                 msg = TelemetryMessage(
                         timestamp=shared_timestamp,
                         source_mac=mac,
@@ -115,8 +115,8 @@ class DeviceWorker(threading.Thread):
                         zone=record.zone,
                         machine=record.machine,
                         machine_stage=record.machine_stage,
-                        value=count,
-                        data_field_index=index
+                        value=int(count),
+                        data_field_index=int(index)
                         )
                 msg_as_bytes = msg.to_bytes()
                 self.publish(msg_as_bytes)
@@ -129,8 +129,8 @@ class DeviceWorker(threading.Thread):
                         timestamp=shared_timestamp,
                         source_mac=mac,
                         source_ip=ip,
-                        value=count,
-                        data_field_index=index
+                        value=int(count),
+                        data_field_index=int(index)
                         )
                 msg_as_bytes = msg.to_bytes()
                 self.publish(msg_as_bytes)
