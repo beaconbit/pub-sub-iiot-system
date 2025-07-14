@@ -1,4 +1,4 @@
-# device/worker.py
+#device/worker.py
 import threading
 import logging
 import time
@@ -105,6 +105,7 @@ class DeviceWorker(threading.Thread):
         for index, count in enumerate(data):
             already_published = False
             try:
+                logger.debug(f"fetching config for {mac} and {ip}")
                 record = self.config_repo.get_by_mac_and_index(mac, index)
                 msg = TelemetryMessage(
                         timestamp=shared_timestamp,
@@ -121,6 +122,7 @@ class DeviceWorker(threading.Thread):
                 self.publish(msg_as_bytes)
                 already_published = True
             except Exception as e:
+                logger.error(f"{e}")
                 logger.error(f"Could not fetch data from message_info_config, publishing raw data instead")
             if not already_published:
                 msg = TelemetryMessage(
