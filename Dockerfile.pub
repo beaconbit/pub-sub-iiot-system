@@ -2,7 +2,7 @@
 FROM python:3.10-slim
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /pub
 
 # Install system dependencies (SQLite CLI + build tools for Python packages)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy only requirements.txt initially (to leverage Docker layer caching)
-COPY app/requirements.txt .
+COPY pub/requirements.txt .
 
 # Optional: Upgrade pip, setuptools, and wheel to avoid build issues
 RUN pip install --upgrade pip setuptools wheel
@@ -22,7 +22,7 @@ RUN pip install --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY app/ .
+COPY pub/ .
 
 RUN chmod +x entrypoint.sh
 # (Optional) Run a database init step if needed during build

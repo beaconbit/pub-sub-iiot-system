@@ -68,16 +68,23 @@ class TelemetryMessage:
     @staticmethod
     def from_bytes(data: bytes) -> "TelemetryMessage":
         d = json.loads(data.decode("utf-8"))
+
+        def safe_enum(enum_class, value):
+            try:
+                return enum_class(value) if value is not None else None
+            except ValueError:
+                return None
+
         return TelemetryMessage(
             timestamp=d["timestamp"],
             source_mac=d["source_mac"],
             source_ip=d["source_ip"],
             source_name=d.get("source_name"),
-            product=Product(d.get("product")),
-            zone=Zone(d.get("zone")),
-            machine=Machine(d.get("machine")),
-            machine_stage=MachineStage(d.get("machine_stage")),
-            event_type=EventType(d.get("event_type")),
+            product=safe_enum(Product, d.get("product")),
+            zone=safe_enum(Zone, d.get("zone")),
+            machine=safe_enum(Machine, d.get("machine")),
+            machine_stage=safe_enum(MachineStage, d.get("machine_stage")),
+            event_type=safe_enum(EventType, d.get("event_type")),
             units=d.get("units"),
             value=d.get("value"),
             data_field_index=d.get("data_field_index"),

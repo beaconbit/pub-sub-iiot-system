@@ -10,6 +10,11 @@ from db.utils.db_session import SessionLocal  # your original session factory
 from db.repository.message_info_config_repository import MessageInfoConfigRepository
 from utils.logging import setup_logger
 from utils.message import TelemetryMessage
+from utils.message import Product
+from utils.message import Zone
+from utils.message import Machine
+from utils.message import MachineStage
+from utils.message import EventType
 from config import load_config
 
 logger = setup_logger(__name__)
@@ -105,16 +110,15 @@ class DeviceWorker(threading.Thread):
         for index, count in enumerate(data):
             already_published = False
             try:
-                logger.debug(f"fetching config for {mac} and {ip}")
                 record = self.config_repo.get_by_mac_and_index(mac, int(index))
                 msg = TelemetryMessage(
                         timestamp=shared_timestamp,
                         source_mac=mac,
                         source_ip=ip,
                         source_name=record.source_name,
-                        zone=record.zone,
-                        machine=record.machine,
-                        machine_stage=record.machine_stage,
+                        zone=Zone(record.zone),
+                        machine=Machine(record.machine),
+                        machine_stage=MachineStage(record.machine_stage),
                         value=int(count),
                         data_field_index=int(index)
                         )

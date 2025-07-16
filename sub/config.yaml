@@ -1,0 +1,4 @@
+process:
+  mode: debug
+  db_url: sqlite:///db/data/snapshots.db
+  db_path: db/data/snapshots.db
