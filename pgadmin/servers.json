@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "PostgresContainer",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "Username": "admin",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "eventlog"
+    }
+  }
+}
+

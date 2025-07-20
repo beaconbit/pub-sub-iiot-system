@@ -1,16 +1,31 @@
 services:
   nats:
     image: nats:2.10
-    command: ["-js", "-m", "8222", "-store_dir", "/data/nats/jetstream"]
     ports:
       - "4222:4222"
       - "8222:8222"
+    command: ["-js", "-m", "8222", "-store_dir", "/data/nats/jetstream"]
     volumes:
       - ./nats_data:/data/nats
 
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: eventlog
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d eventlog"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data       # <-- Persistent volume
+      - ./init-postgres:/docker-entrypoint-initdb.d
 
   # Python service that continually scrapes metrics and publishes them to NATS
   pub:
+    image: publisher:python
     build:
       dockerfile: Dockerfile.pub
     network_mode: host
@@ -21,16 +36,33 @@ services:
       - ./pub/db/data:/pub/db/data
     command: ["/bin/bash", "entrypoint.sh"]
     depends_on:
-      - nats
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
 
+  # Python service that subscribes to events on nats-jetstream an writes them to postgres
   sub:
+    image: subscriber:python
     build:
       dockerfile: Dockerfile.sub
     volumes:
       - ./sub/db/data:/sub/db/data
     command: ["/bin/bash", "entrypoint.sh"]
     depends_on:
-      - nats
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   sqlite_web:
     image: coleifer/sqlite-web
@@ -41,3 +73,8 @@ services:
     command: ["sqlite_web", "/data/devices.db"]
     depends_on:
       - pub
+
+# this volume is managed by docker so I don't need to care about permissions
+# Chage this to a normal bind mounted volume if direct access to records on disk is required
+volumes:
+  postgres_data:
