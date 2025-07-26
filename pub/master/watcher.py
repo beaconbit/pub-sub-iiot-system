@@ -59,7 +59,6 @@ class WatcherThread(threading.Thread):
                         publish
                     )
             else: # kill threads that are no longer valid 
-                logger.debug(f"Found Invalid Device {mac}. KILLING !!")
                 if mac in self.device_threads:
                     logger.debug(f"Found Invalid Device {mac}.  REALLY KILLING IT !!")
                     self.stop_worker_for_device(mac)

@@ -39,7 +39,7 @@ class DeviceWorker(threading.Thread):
         while self.running:
             if self.device.get('failures') > 5:
                 logger.debug(f"LOTS OF FAILURES: {self.device.get('failures')}")
-                self.invalidate()
+                self.exit_cleanly()
             try:
                 if self.device.get("cookie_expires", -1) < int(time.time()):
                     logger.critical(f"Refreshing cookie")
@@ -49,11 +49,13 @@ class DeviceWorker(threading.Thread):
                 logger.info(f"About to check cookie: {self.device.get('cookie')}")
                 if self.device.get("cookie", False):
                     logger.info(f"About to scraped zee data")
+                    shared_timestamp = int(time.time())
                     data = self.scrape()
                     logger.info(f"Finished scraping le daataa: {data}")
                     logger.critical(f"data: {data}")
                     # Publish a message to NATS
-                    self.publish_message(data)
+                    self.publish_message(data, shared_timestamp)
+
                 else:
                     # brute_force will throw an error if all the auth flows fail
                     password, username, auth_flow, scraper, cookie = brute_force(copy.deepcopy(self.device))
@@ -76,6 +78,10 @@ class DeviceWorker(threading.Thread):
             time.sleep(5)  # TODO replace with interval from config
         session.close() # clean up
         logger.debug(f"Thread stopping for device {mac}")
+
+    def exit_cleanly(self):
+        self.invalidate()
+        self.stop()
 
     def stop(self):
         self.running = False
@@ -103,8 +109,17 @@ class DeviceWorker(threading.Thread):
         data = scraper_fn(self.device)
         return data
 
-    def publish_message(self, data):
-        shared_timestamp = int(time.time())
+    def publish_if_valid(self, msg):
+        # for some reason some devices appear to use -3000 or -5000 as their starting value
+        # so the validity check can't be as naive as checking if the value is greater than 0
+        if msg.value is not 0:
+            msg_as_bytes = msg.to_bytes()
+            self.publish(msg_as_bytes)
+        else:
+            logger.info(f"dropping message with value {msg.value} \n{msg}")
+
+
+    def publish_message(self, data, shared_timestamp):
         mac = self.device.get("mac")
         ip = self.device.get("ip")
         for index, count in enumerate(data):
@@ -122,8 +137,7 @@ class DeviceWorker(threading.Thread):
                         value=int(count),
                         data_field_index=int(index)
                         )
-                msg_as_bytes = msg.to_bytes()
-                self.publish(msg_as_bytes)
+                self.publish_if_valid(msg)
                 already_published = True
             except Exception as e:
                 logger.error(f"{e}")
@@ -136,5 +150,4 @@ class DeviceWorker(threading.Thread):
                         value=int(count),
                         data_field_index=int(index)
                         )
-                msg_as_bytes = msg.to_bytes()
-                self.publish(msg_as_bytes)
+                self.publish_if_valid(msg)

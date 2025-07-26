@@ -133,6 +133,8 @@ class DefaultConsumerThread(threading.Thread):
 
             if current_msg.timestamp > last_msg.timestamp and current_msg.value > last_msg.value:
                 payload = current_msg.value - last_msg.value
+                if payload > 50:
+                    payload = 1
 
             self.get_last_seen_entry(subject)[index] = current_msg # even if payload is zero update the timestamp
             # logger.info(f"last message - TelemetryMessage:\n{pprint.pformat(vars(last_msg))}")

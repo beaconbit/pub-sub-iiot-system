@@ -23,6 +23,16 @@ services:
       - postgres_data:/var/lib/postgresql/data       # <-- Persistent volume
       - ./init-postgres:/docker-entrypoint-initdb.d
 
+  grafana:
+    image: grafana/grafana  # Use the Grafana image
+    user: "0:0"
+    ports:
+      - "3015:3000"  # Map port 3000 on the host to port 3000 in the container
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning  # Mount provisioning directory
+      - ./grafana/data:/var/lib/grafana  # Persist Grafana data
+        #- ./grafana/config:/etc/grafana  # Mount grafana to access grafana.ini
+
   # Python service that continually scrapes metrics and publishes them to NATS
   pub:
     image: publisher:python
@@ -70,7 +80,7 @@ services:
       - "8080:8080"
     volumes:
       - ./pub/db/data:/data
-    command: ["sqlite_web", "/data/devices.db"]
+    command: ["sqlite_web", "--host", "0.0.0.0", "/data/devices.db"]
     depends_on:
       - pub
 

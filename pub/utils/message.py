@@ -17,6 +17,11 @@ class Machine(Enum):
     IRONER1 = "Ironer 1"
     IRONER2 = "Ironer 2"
     IRONER3 = "Ironer 3"
+    TOWELFOLDER1 = "Towel Folder 1"
+    TOWELFOLDER2 = "Towel Folder 2"
+    TOWELFOLDER3 = "Towel Folder 3"
+    TOWELFOLDER4 = "Towel Folder 4"
+    BLANKETFOLDER = "Blanket Folder"
 
 class MachineStage(Enum):
     FEEDER = "feeder"

@@ -31,7 +31,7 @@ def scrape_from_spindle_device(device: dict) -> List[int]:
     headers = {'Cookie': f'adamsessionid={cookie}'}
     response = requests.get(url, headers=headers)
     json_text = response.text
-    logger.info(f"json returned during scraping: {json_text}")
+    logger.info(f"{device.get('mac')} json returned during scraping: {json_text}")
     parsed_data = json.loads(json_text)
     logger.info(f"parsed data from returned json: {parsed_data}")
     di_val = parsed_data["DIVal"]
