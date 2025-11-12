@@ -1,3 +1,5 @@
+# device/utils/scraper_registry.py
+
 # This file uses decorators
 # @decorator is shorthand for func = decorator(func)
 # @register_scraper("json_http") registers a scraping function under a string key

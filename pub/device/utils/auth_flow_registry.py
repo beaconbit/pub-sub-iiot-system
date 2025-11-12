@@ -1,3 +1,4 @@
+# device/utils/auth_flow_registry.py
 # This file uses decorators
 # @decorator is shorthand for func = decorator(func)
 # @register_auth_flow("spindle_device") register an auth flow function under a string key
@@ -29,6 +30,7 @@ def auth_spindle_device(device: dict) -> str:
     #password="10011230"
     url = f"http://{ip}/config"
     hash_output = ""
+
     response = requests.get(url)
     response.raise_for_status() # Raises an error if the status code isn't 200
     content_type = response.headers.get("Content-Type", "")
