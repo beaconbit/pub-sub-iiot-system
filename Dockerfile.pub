@@ -1,31 +1,17 @@
-# Base image with Python pre-installed
-FROM python:3.10-slim
+# ---- Build ----
+FROM golang:1.23 AS builder
 
-# Set the working directory in the container
-WORKDIR /pub
+WORKDIR /app
 
-# Install system dependencies (SQLite CLI + build tools for Python packages)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    python3-dev \
-    libffi-dev \
-    sqlite3 \
-    && rm -rf /var/lib/apt/lists/*
+COPY pub/go.mod pub/go.sum ./
+RUN go mod download
 
-# Copy only requirements.txt initially (to leverage Docker layer caching)
-COPY pub/requirements.txt .
-
-# Optional: Upgrade pip, setuptools, and wheel to avoid build issues
-RUN pip install --upgrade pip setuptools wheel
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
 COPY pub/ .
+RUN CGO_ENABLED=0 GOOS=linux go build -o publisher main.go
 
-RUN chmod +x entrypoint.sh
-# (Optional) Run a database init step if needed during build
-#RUN python init_db.py
+# ---- Runtime ----
+FROM gcr.io/distroless/base
+COPY --from=builder /app/publisher /publisher
 
+ENTRYPOINT ["/publisher"]
 

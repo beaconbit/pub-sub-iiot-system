@@ -4,9 +4,7 @@ services:
     ports:
       - "4222:4222"
       - "8222:8222"
-    command: ["-js", "-m", "8222", "-store_dir", "/data/nats/jetstream"]
-    volumes:
-      - ./nats_data:/data/nats
+    command: ["-m", "8222"]
 
   postgres:
     image: postgres:15
@@ -33,18 +31,17 @@ services:
       - ./grafana/data:/var/lib/grafana  # Persist Grafana data
         #- ./grafana/config:/etc/grafana  # Mount grafana to access grafana.ini
 
-  # Python service that continually scrapes metrics and publishes them to NATS
+  # Golang service that continually scrapes metrics and publishes them to NATS
   pub:
-    image: publisher:python
     build:
+      context: .
       dockerfile: Dockerfile.pub
+    image: publisher:go
     network_mode: host
     cap_add:
       - NET_RAW
       - NET_ADMIN
-    volumes:
-      - ./pub/db/data:/pub/db/data
-    command: ["/bin/bash", "entrypoint.sh"]
+    command: ["/publisher"]     # override ENTRYPOINT
     depends_on:
       postgres:
         condition: service_healthy
