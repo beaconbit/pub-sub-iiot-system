@@ -1,0 +1,223 @@
+#0 building with "default" instance using docker driver
+
+#1 [pub internal] load build definition from Dockerfile.pub
+#1 transferring dockerfile: 349B done
+#1 DONE 0.0s
+
+#2 [sub internal] load build definition from Dockerfile.sub
+#2 transferring dockerfile: 352B done
+#2 DONE 0.0s
+
+#3 [sub internal] load metadata for docker.io/library/golang:1.23
+#3 DONE 0.3s
+
+#4 [sub internal] load metadata for gcr.io/distroless/base:latest
+#4 DONE 0.6s
+
+#5 [sub internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [pub builder 1/6] FROM docker.io/library/golang:1.23@sha256:60deed95d3888cc5e4d9ff8a10c54e5edc008c6ae3fba6187be6fb592e19e8c0
+#6 DONE 0.0s
+
+#7 [pub stage-1 1/2] FROM gcr.io/distroless/base:latest@sha256:9e9b50d2048db3741f86a48d939b4e4cc775f5889b3496439343301ff54cdba8
+#7 DONE 0.0s
+
+#8 [pub internal] load .dockerignore
+#8 transferring context: 2B done
+#8 DONE 0.0s
+
+#9 [sub internal] load build context
+#9 transferring context: 16.35kB 0.0s done
+#9 DONE 0.0s
+
+#10 [pub internal] load build context
+#10 transferring context: 37.28kB done
+#10 DONE 0.0s
+
+#11 [sub builder 4/6] RUN go mod download
+#11 CACHED
+
+#12 [sub builder 3/6] COPY sub/go.mod sub/go.sum ./
+#12 CACHED
+
+#13 [sub builder 6/6] RUN CGO_ENABLED=0 GOOS=linux go build -o subscriber main.go
+#13 CACHED
+
+#14 [sub builder 5/6] COPY sub/ .
+#14 CACHED
+
+#15 [sub stage-1 2/2] COPY --from=builder /app/subscriber /subscriber
+#15 CACHED
+
+#16 [pub builder 5/6] COPY pub/ .
+#16 CACHED
+
+#17 [pub builder 2/6] WORKDIR /app
+#17 CACHED
+
+#18 [pub builder 4/6] RUN go mod download
+#18 CACHED
+
+#19 [pub builder 3/6] COPY pub/go.mod pub/go.sum ./
+#19 CACHED
+
+#20 [pub builder 6/6] RUN CGO_ENABLED=0 GOOS=linux go build -o publisher main.go
+#20 CACHED
+
+#21 [pub stage-1 2/2] COPY --from=builder /app/publisher /publisher
+#21 CACHED
+
+#22 [sub] exporting to image
+#22 exporting layers done
+#22 writing image sha256:d0cafd8b4b1824cb14d63ba9f3b2923e6a88d836713e49c2d32bcd8419d89ea4 done
+#22 naming to docker.io/library/subscriber:go done
+#22 DONE 0.0s
+
+#23 [pub] exporting to image
+#23 exporting layers done
+#23 writing image sha256:e4a3b23f1cb0b76439540a2c7751f94a325f185c5fca552c1043f5f074e4292a done
+#23 naming to docker.io/library/publisher:go done
+#23 DONE 0.0s
+
+#24 [sub] resolving provenance for metadata file
+#24 DONE 0.0s
+
+#25 [pub] resolving provenance for metadata file
+#25 DONE 0.0s
+Attaching to adminer-1, grafana-1, nats-1, postgres-1, pub-1, sqlite_web-1, sub-1
+postgres-1    | 
+postgres-1    | PostgreSQL Database directory appears to contain a database; Skipping initialization
+postgres-1    | 
+grafana-1     | Grafana server is running with elevated privileges. This is not recommended
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034350065Z level=info msg="Starting Grafana" version=12.0.1 commit=80658a73c5355e3ed318e5e021c0866285153b57 branch=HEAD compiled=2025-11-22T08:47:52Z
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034662272Z level=info msg="Config loaded from" file=/usr/share/grafana/conf/defaults.ini
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034672588Z level=info msg="Config loaded from" file=/etc/grafana/grafana.ini
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034678342Z level=info msg="Config overridden from command line" arg="default.paths.data=/var/lib/grafana"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034682767Z level=info msg="Config overridden from command line" arg="default.paths.logs=/var/log/grafana"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034686635Z level=info msg="Config overridden from command line" arg="default.paths.plugins=/var/lib/grafana/plugins"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034690473Z level=info msg="Config overridden from command line" arg="default.paths.provisioning=/etc/grafana/provisioning"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034694535Z level=info msg="Config overridden from command line" arg="default.log.mode=console"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034698828Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_DATA=/var/lib/grafana"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034702736Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_LOGS=/var/log/grafana"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034706789Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_PLUGINS=/var/lib/grafana/plugins"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034710627Z level=info msg="Config overridden from Environment variable" var="GF_PATHS_PROVISIONING=/etc/grafana/provisioning"
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034714899Z level=info msg=Target target=[all]
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034723352Z level=info msg="Path Home" path=/usr/share/grafana
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034727372Z level=info msg="Path Data" path=/var/lib/grafana
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034731244Z level=info msg="Path Logs" path=/var/log/grafana
+grafana-1     | logger=settings t=2025-11-22T08:47:52.03473503Z level=info msg="Path Plugins" path=/var/lib/grafana/plugins
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034738966Z level=info msg="Path Provisioning" path=/etc/grafana/provisioning
+grafana-1     | logger=settings t=2025-11-22T08:47:52.034742982Z level=info msg="App mode production"
+grafana-1     | logger=featuremgmt t=2025-11-22T08:47:52.03512511Z level=info msg=FeatureToggles logsExploreTableVisualisation=true angularDeprecationUI=true reportingUseRawTimeRange=true annotationPermissionUpdate=true kubernetesPlaylists=true useSessionStorageForRedirection=true lokiQuerySplitting=true groupToNestedTableTransformation=true awsAsyncQueryCaching=true addFieldFromCalculationStatFunctions=true alertingInsights=true newDashboardSharingComponent=true cloudWatchRoundUpEndTime=true unifiedStorageSearchPermissionFiltering=true promQLScope=true tlsMemcached=true grafanaconThemes=true transformationsRedesign=true nestedFolders=true lokiStructuredMetadata=true ssoSettingsSAML=true cloudWatchCrossAccountQuerying=true kubernetesClientDashboardsFolders=true publicDashboardsScene=true onPremToCloudMigrations=true unifiedRequestLog=true dashboardScene=true panelMonitoring=true recordedQueriesMulti=true logRowsPopoverMenu=true lokiLabelNamesQueryApi=true logsInfiniteScrolling=true logsContextDatasourceUi=true alertingRulePermanentlyDelete=true correlations=true ssoSettingsApi=true alertingUIOptimizeReducer=true alertRuleRestore=true dashgpt=true prometheusUsesCombobox=true logsPanelControls=true newFiltersUI=true dashboardSceneForViewers=true failWrongDSUID=true lokiQueryHints=true formatString=true alertingSimplifiedRouting=true azureMonitorPrometheusExemplars=true externalCorePlugins=true influxdbBackendMigration=true alertingApiServer=true alertingRuleVersionHistoryRestore=true pinNavItems=true alertingRuleRecoverDeleted=true recoveryThreshold=true newPDFRendering=true dashboardSceneSolo=true alertingNotificationsStepMode=true pluginsDetailsRightPanel=true dataplaneFrontendFallback=true cloudWatchNewLabelParsing=true preinstallAutoUpdate=true alertingQueryAndExpressionsStepMode=true azureMonitorEnableUserAuth=true prometheusAzureOverrideAudience=true
+grafana-1     | logger=sqlstore t=2025-11-22T08:47:52.035185104Z level=info msg="Connecting to DB" dbtype=sqlite3
+grafana-1     | logger=migrator t=2025-11-22T08:47:52.044448271Z level=info msg="Locking database"
+grafana-1     | logger=migrator t=2025-11-22T08:47:52.044469484Z level=info msg="Starting DB migrations"
+grafana-1     | logger=migrator t=2025-11-22T08:47:52.062889066Z level=info msg="migrations completed" performed=0 skipped=654 duration=773.88µs
+grafana-1     | logger=migrator t=2025-11-22T08:47:52.063396756Z level=info msg="Unlocking database"
+grafana-1     | logger=secrets t=2025-11-22T08:47:52.063718722Z level=info msg="Envelope encryption state" enabled=true currentprovider=secretKey.v1
+grafana-1     | logger=plugin.angulardetectorsprovider.dynamic t=2025-11-22T08:47:52.144501864Z level=info msg="Restored cache from database" duration=432.756µs
+grafana-1     | logger=resource-migrator t=2025-11-22T08:47:52.153358195Z level=info msg="Locking database"
+grafana-1     | logger=resource-migrator t=2025-11-22T08:47:52.15343975Z level=info msg="Starting DB migrations"
+grafana-1     | logger=resource-migrator t=2025-11-22T08:47:52.161749594Z level=info msg="migrations completed" performed=0 skipped=26 duration=41.956µs
+grafana-1     | logger=resource-migrator t=2025-11-22T08:47:52.162159726Z level=info msg="Unlocking database"
+grafana-1     | t=2025-11-22T08:47:52.162340958Z level=info caller=logger.go:214 time=2025-11-22T08:47:52.162326777Z msg="Using channel notifier" logger=sql-resource-server
+grafana-1     | logger=plugin.store t=2025-11-22T08:47:52.1632247Z level=info msg="Loading plugins..."
+grafana-1     | logger=plugins.registration t=2025-11-22T08:47:52.216672062Z level=error msg="Could not register plugin" pluginId=table error="plugin table is already registered"
+grafana-1     | logger=plugins.initialization t=2025-11-22T08:47:52.216690047Z level=error msg="Could not initialize plugin" pluginId=table error="plugin table is already registered"
+grafana-1     | logger=plugins.registration t=2025-11-22T08:47:52.269457706Z level=info msg="Plugin registered" pluginId=grafana-exploretraces-app
+grafana-1     | logger=plugins.registration t=2025-11-22T08:47:52.342869989Z level=info msg="Plugin registered" pluginId=grafana-lokiexplore-app
+grafana-1     | logger=plugins.registration t=2025-11-22T08:47:52.389723071Z level=info msg="Plugin registered" pluginId=grafana-metricsdrilldown-app
+grafana-1     | logger=plugins.registration t=2025-11-22T08:47:52.426178221Z level=info msg="Plugin registered" pluginId=grafana-pyroscope-app
+grafana-1     | logger=plugin.store t=2025-11-22T08:47:52.426196965Z level=info msg="Plugins loaded" count=57 duration=262.972843ms
+grafana-1     | logger=provisioning.dashboard t=2025-11-22T08:47:52.430390359Z level=error msg="can't read dashboard provisioning files from directory" path=/etc/grafana/provisioning/dashboards error="open /etc/grafana/provisioning/dashboards: no such file or directory"
+grafana-1     | logger=query_data t=2025-11-22T08:47:52.431027395Z level=info msg="Query Service initialization"
+grafana-1     | logger=live.push_http t=2025-11-22T08:47:52.434397382Z level=info msg="Live Push Gateway initialization"
+grafana-1     | logger=ngalert.notifier.alertmanager org=1 t=2025-11-22T08:47:52.437129909Z level=info msg="Applying new configuration to Alertmanager" configHash=d2c56faca6af2a5772ff4253222f7386
+grafana-1     | logger=ngalert t=2025-11-22T08:47:52.44499203Z level=info msg="Using simple database alert instance store"
+grafana-1     | logger=ngalert.state.manager.persist t=2025-11-22T08:47:52.445013279Z level=info msg="Using sync state persister"
+grafana-1     | logger=infra.usagestats.collector t=2025-11-22T08:47:52.446948579Z level=info msg="registering usage stat providers" usageStatsProvidersLen=2
+grafana-1     | logger=grafanaStorageLogger t=2025-11-22T08:47:52.447248978Z level=info msg="Storage starting"
+grafana-1     | logger=http.server t=2025-11-22T08:47:52.450288184Z level=info msg="HTTP Server Listen" address=[::]:3000 protocol=http subUrl= socket=
+grafana-1     | logger=ngalert.state.manager t=2025-11-22T08:47:52.450354924Z level=info msg="Warming state cache for startup"
+grafana-1     | logger=ngalert.multiorg.alertmanager t=2025-11-22T08:47:52.460466676Z level=info msg="Starting MultiOrg Alertmanager"
+grafana-1     | logger=ngalert.state.manager t=2025-11-22T08:47:52.526866224Z level=info msg="State cache has been initialized" states=0 duration=76.510392ms
+grafana-1     | logger=ngalert.scheduler t=2025-11-22T08:47:52.526939849Z level=info msg="Starting scheduler" tickInterval=10s maxAttempts=3
+grafana-1     | logger=ticker t=2025-11-22T08:47:52.527012666Z level=info msg=starting first_tick=2025-11-22T08:48:00Z
+grafana-1     | logger=provisioning.plugins t=2025-11-22T08:47:52.53993827Z level=error msg="Failed to read plugin provisioning files from directory" path=/etc/grafana/provisioning/plugins error="open /etc/grafana/provisioning/plugins: no such file or directory"
+grafana-1     | logger=provisioning.alerting t=2025-11-22T08:47:52.540001346Z level=error msg="can't read alerting provisioning files from directory" path=/etc/grafana/provisioning/alerting error="open /etc/grafana/provisioning/alerting: no such file or directory"
+grafana-1     | logger=provisioning.alerting t=2025-11-22T08:47:52.540021128Z level=info msg="starting to provision alerting"
+grafana-1     | logger=provisioning.alerting t=2025-11-22T08:47:52.540030422Z level=info msg="finished to provision alerting"
+grafana-1     | logger=provisioning.dashboard t=2025-11-22T08:47:52.540040846Z level=error msg="can't read dashboard provisioning files from directory" path=/etc/grafana/provisioning/dashboards error="open /etc/grafana/provisioning/dashboards: no such file or directory"
+grafana-1     | logger=plugins.update.checker t=2025-11-22T08:47:52.992712712Z level=info msg="Update check succeeded" duration=531.849251ms
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.010374814Z level=info msg="Adding GroupVersion userstorage.grafana.app v0alpha1 to ResourceManager"
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.011073986Z level=info msg="Adding GroupVersion playlist.grafana.app v0alpha1 to ResourceManager"
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.013856512Z level=info msg="Adding GroupVersion dashboard.grafana.app v1beta1 to ResourceManager"
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.014505163Z level=info msg="Adding GroupVersion dashboard.grafana.app v0alpha1 to ResourceManager"
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.01499365Z level=info msg="Adding GroupVersion dashboard.grafana.app v2alpha1 to ResourceManager"
+grafana-1     | logger=grafana.update.checker t=2025-11-22T08:47:53.01539316Z level=info msg="Update check succeeded" duration=555.082063ms
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.015508006Z level=info msg="Adding GroupVersion featuretoggle.grafana.app v0alpha1 to ResourceManager"
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.016197163Z level=info msg="Adding GroupVersion folder.grafana.app v1beta1 to ResourceManager"
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.017370638Z level=info msg="Adding GroupVersion iam.grafana.app v0alpha1 to ResourceManager"
+grafana-1     | logger=grafana-apiserver t=2025-11-22T08:47:53.019508869Z level=info msg="Adding GroupVersion notifications.alerting.grafana.app v0alpha1 to ResourceManager"
+grafana-1     | logger=app-registry t=2025-11-22T08:47:53.066624696Z level=info msg="app registry initialized"
+grafana-1     | logger=provisioning.dashboard t=2025-11-22T08:47:53.074306505Z level=info msg="starting to provision dashboards"
+grafana-1     | logger=provisioning.dashboard t=2025-11-22T08:47:53.074321926Z level=info msg="finished to provision dashboards"
+sub-1         | Connected to Postgres
+sub-1         | Connected to NATS, waiting for messages...
+sqlite_web-1  |  * Serving Flask app 'sqlite_web.sqlite_web'
+sqlite_web-1  |  * Debug mode: off
+pub-1         | Initializing . . .
+pub-1         | Local IP:   192.168.0.11
+pub-1         | CIDR:       192.168.0.11/24
+pub-1         | Device IP:  192.168.0.182
+pub-1         | listeners createdlisteners startedSeed value: CA48CD21
+pub-1         | hash: c6a1e158a43ff624a8e23047fb3c07f4
+pub-1         | outgoing request:
+pub-1         | POST /config/index.html HTTP/1.1
+pub-1         | Host: 192.168.0.182
+pub-1         | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36
+pub-1         | Content-Length: 59
+pub-1         | Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+pub-1         | Accept-Encoding: gzip, deflate
+pub-1         | Accept-Language: en-US,en;q=0.9
+pub-1         | Cache-Control: no-cache
+pub-1         | Connection: keep-alive
+pub-1         | Content-Type: application/x-www-form-urlencoded
+pub-1         | Pragma: no-cache
+pub-1         | Upgrade-Insecure-Requests: 1
+pub-1         | 
+pub-1         | seeddata=CA48CD21&authdata=c6a1e158a43ff624a8e23047fb3c07f4
+pub-1         | Cookie: 510BB60F53Fresponse cookie: 510BB60F53F
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1352] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2676] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2211] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 0
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1352] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2676] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 1
+sub-1         | message read from nats
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1352] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2676] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 2
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2676] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 3
+sub-1         | {2025-11-22 08:48:02.386533041 +0000 UTC lane.3 1 74:FE:48:5C:5D:40 192.168.0.182 1 0 0 2212 2}message read from nats
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2676] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 4
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2676] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 5
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 6
+sub-1         | {2025-11-22 08:48:04.439709715 +0000 UTC lane.1 1 74:FE:48:5C:5D:40 192.168.0.182 1 0 0 1353 0}message read from nats
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 7
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 8
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 9
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 10
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 11
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 12
+pub-1         | scraping http://192.168.0.182/di_value/slot_0parsed data from returned json: {DIVal:[map[Ch:0 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1353] map[Ch:1 Cnting:1 Md:1 OvLch:0 Stat:0 Val:2677] map[Ch:2 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2212] map[Ch:3 Cnting:1 Md:1 OvLch:0 Stat:1 Val:734] map[Ch:4 Cnting:1 Md:1 OvLch:0 Stat:1 Val:2845] map[Ch:5 Cnting:1 Md:1 OvLch:0 Stat:1 Val:1744] map[Ch:6 Cnting:1 Md:1 OvLch:0 Stat:1 Val:3575] map[Ch:7 Cnting:1 Md:1 OvLch:0 Stat:0 Val:0]]}
+pub-1         | requests since cookie refresh: 13

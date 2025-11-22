@@ -50,12 +50,10 @@ services:
 
   # Python service that subscribes to events on nats-jetstream an writes them to postgres
   sub:
-    image: subscriber:python
+    image: subscriber:go
     build:
       dockerfile: Dockerfile.sub
-    volumes:
-      - ./sub/db/data:/sub/db/data
-    command: ["/bin/bash", "entrypoint.sh"]
+    command: ["/subscriber"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,16 +68,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
-  sqlite_web:
-    image: coleifer/sqlite-web
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./pub/db/data:/data
-    command: ["sqlite_web", "--host", "0.0.0.0", "/data/devices.db"]
-    depends_on:
-      - pub
 
 # this volume is managed by docker so I don't need to care about permissions
 # Chage this to a normal bind mounted volume if direct access to records on disk is required

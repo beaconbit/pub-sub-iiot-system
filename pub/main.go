@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"crypto/md5"
 	"fmt"
+	"log"
 	"io"
 	"compress/gzip"
 	"net"
@@ -29,13 +30,24 @@ type Message struct {
 	Timestamp time.Time `json:"timestamp"`
 	Label     string    `json:"label"`
 	Value     int       `json:"value"`
+	Mac	  string    `json:"mac"`
+	IP	  string    `json:"ip"`
+	Factor    float32   `json:"factor"`
+	Reading   float32   `json:"reading"`
+	Measurement float32 `json:"measurement"`
+	Metric    int       `json:"metric"`
+	DFI       int       `json:"dfi"`
 }
 
 // Listener periodically polls an HTTP endpoint and
 // sends a message to msgCh if some condition is met.
 type Listener struct {
 	msgCh     chan<- Message // send-only channel to main program
+	mac string
 	ipAddress string
+	activeInterface string
+	username string
+	password string
 	interval time.Duration // poll interval
 	requestsSinceCookieRefresh int
 	cookie string
@@ -89,10 +101,20 @@ func clientForInterface(ifName string) (*http.Client, error) {
 // msgCh: channel to send messages on
 // ipAddress: address to poll (e.g. "http://192.168.1.50/status")
 // label: identifying label for this listener
-func NewListener(msgCh chan<- Message, ipAddress string) *Listener {
+func NewListener(
+	msgCh chan<- Message, 
+	mac string,
+	ipAddress string, 
+	activeInterface string,
+	username string,
+	password string) *Listener {
 	return &Listener{
-		msgCh:     msgCh,
+		msgCh: msgCh,
+		mac: mac,
 		ipAddress: ipAddress,
+		activeInterface: activeInterface,
+		username: username,
+		password: password,
 		interval:  1 * time.Second, // default poll interval
 		requestsSinceCookieRefresh: 0,
 		cookie: "",
@@ -125,9 +147,16 @@ func (l *Listener) Run() {
 
 		case counts[i] == previousCount[i]+1:
 			l.msgCh <- Message{
-			    Timestamp: time.Now(),
-			    Label:     fmt.Sprintf("lane.%d", i+1),
-			    Value: counts[i],
+			    Timestamp:  time.Now(),
+			    Label:	fmt.Sprintf("lane.%d", i+1),
+			    Value:	1,
+			    Mac:	l.mac,	  
+			    IP:		l.ipAddress,
+			    Factor:	1.0, 
+			    Reading:	0.0,
+			    Measurement: 0,
+			    Metric:	counts[i],
+			    DFI:	i,
 			}
 			previousCount[i] = counts[i]
 
@@ -146,12 +175,12 @@ func (l *Listener) Run() {
 
 func (l *Listener) PingDevice() ([]int, error) {
     l.requestsSinceCookieRefresh += 1
-    client, err := clientForInterface("eno1")
-    username := "root"
-    password := "10011230"
+    client, err := clientForInterface(l.activeInterface)
+    username := l.username
+    password := l.password
     var cookie string
     cookie = l.cookie
-    if l.requestsSinceCookieRefresh > 24 || len(l.cookie) == 0 || l.errorCount > 3 {
+    if l.requestsSinceCookieRefresh > 20 || len(l.cookie) == 0 || l.errorCount > 3 {
 
 	    // getting the cookie
 	    l.requestsSinceCookieRefresh = 0
@@ -298,6 +327,14 @@ func (l *Listener) PingDevice() ([]int, error) {
 	}
     }
 
+    if len(readings) == 0 {
+        return nil, fmt.Errorf("array of iot value counts was empty %v", readings)
+    }
+    if len(readings) < 8 {
+        return nil, fmt.Errorf("array of iot value counts was had less than 8 elements %v", readings)
+    }
+
+
     fmt.Printf("requests since cookie refresh: %d\n", l.requestsSinceCookieRefresh)
 
     return []int{readings[0], readings[1], readings[2], readings[3], readings[4], readings[5], readings[6], readings[7]}, nil
@@ -316,37 +353,46 @@ func main() {
 
 
 	// startup check to confirm ip of device [START]
-	targetMac := "74:FE:48:6C:20:DF" // replace with real MAC
+	targetMac := "74:FE:48:5C:5D:40" // replace with real MAC
 
-	if err := startup.Init(targetMac); err != nil {
-		fmt.Println("Startup error:", err)
-		return
-	}
-
-	fmt.Println("Local IP:  ", startup.LocalIP)
-	fmt.Println("CIDR:      ", startup.CIDR)
-
-	if startup.DeviceIP == "" {
-		fmt.Println("Device not found on network")
-	} else {
-		fmt.Println("Device IP: ", startup.DeviceIP)
+	for {
+		fmt.Printf("Initializing")
+		time.Sleep(1 * time.Second)
+		fmt.Printf(" .")
+		time.Sleep(1 * time.Second)
+		fmt.Printf(" .")
+		time.Sleep(1 * time.Second)
+		fmt.Printf(" .\n")
+		if err := startup.Init(targetMac); err != nil {
+			fmt.Println("Startup error:", err)
+			return
+		}
+		fmt.Println("Local IP:  ", startup.LocalIP)
+		fmt.Println("CIDR:      ", startup.CIDR)
+		if startup.DeviceIP == "" {
+			fmt.Println("Device not found on network")
+		} else {
+			fmt.Println("Device IP: ", startup.DeviceIP)
+			break
+		}
 	}
 	// startup check to confirm ip of device [END]
 
 
 
 	msgCh := make(chan Message, 6)
+	username := "root"
+	password := "10011230"
 
 	listeners := []*Listener{
-	    //NewListener(msgCh, "192.168.0.184", tag1, signalTerminalNumber),
-	    NewListener(msgCh, "192.168.0.178"),
-	    //NewListener(msgCh, "192.168.0.12", tag3, signalTerminalNumber),
+	    NewListener(msgCh, targetMac, startup.DeviceIP, startup.ActiveInterface, username, password),
 	}
 	fmt.Printf("listeners created")
 
 	for _, l := range listeners {
 	    go l.Run()
 	}
+
 	fmt.Printf("listeners started")
 
 	// graceful shutdown on SIGINT/SIGTERM
