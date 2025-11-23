@@ -353,7 +353,7 @@ func main() {
 
 
 	// startup check to confirm ip of device [START]
-	targetMac := "74:FE:48:5C:5D:40" // replace with real MAC
+	targetMac := "74:FE:48:70:C9:6C" // replace with real MAC
 
 	for {
 		fmt.Printf("Initializing")

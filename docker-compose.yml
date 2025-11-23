@@ -29,7 +29,8 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning  # Mount provisioning directory
       - ./grafana/data:/var/lib/grafana  # Persist Grafana data
-        #- ./grafana/config:/etc/grafana  # Mount grafana to access grafana.ini
+      - ./grafana/config/grafana.ini:/etc/grafana/grafana.ini  # Mount grafana to access grafana.ini
+      - ./grafana/config:/etc/grafana  # Mount grafana to access grafana.ini
 
   # Golang service that continually scrapes metrics and publishes them to NATS
   pub:
