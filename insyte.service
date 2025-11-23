@@ -8,7 +8,7 @@ Requires=docker.service
 
 [Service]
 Type=simple
-WorkingDirectory=/path/to/your/docker-compose-directory
+WorkingDirectory=/opt/insyte/pub-sub-iiot-system
 ExecStart=/usr/local/bin/docker-compose up
 ExecStop=/usr/local/bin/docker-compose down
 Restart=always
