@@ -1,6 +1,3 @@
-// go.mod: module discord-webhook
-// run: go run main.go
-
 package main
 
 import (
@@ -353,7 +350,7 @@ func main() {
 
 
 	// startup check to confirm ip of device [START]
-	targetMac := "74:FE:48:70:C9:6C" // replace with real MAC
+	targetMac := "74:FE:48:6C:21:20" // replace with real MAC
 
 	for {
 		fmt.Printf("Initializing")
@@ -371,6 +368,7 @@ func main() {
 		fmt.Println("CIDR:      ", startup.CIDR)
 		if startup.DeviceIP == "" {
 			fmt.Println("Device not found on network")
+			fmt.Println("Device IP: ", startup.DeviceIP)
 		} else {
 			fmt.Println("Device IP: ", startup.DeviceIP)
 			break

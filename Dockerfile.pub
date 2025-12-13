@@ -2,15 +2,16 @@
 FROM golang:1.23 AS builder
 
 WORKDIR /app
-
 COPY pub/go.mod pub/go.sum ./
 RUN go mod download
-
 COPY pub/ .
 RUN CGO_ENABLED=0 GOOS=linux go build -o publisher main.go
 
 # ---- Runtime ----
-FROM gcr.io/distroless/base
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y nmap ca-certificates && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/publisher /publisher
 
 ENTRYPOINT ["/publisher"]

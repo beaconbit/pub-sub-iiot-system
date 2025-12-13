@@ -23,14 +23,14 @@ var (
 func Init(targetMac string) error {
 	activeInterface, err := findActiveEthernetInterface()
 	if err != nil {
-		return fmt.Errorf("interface not found: %w", err)
+	    return fmt.Errorf("interface not found: %w", err)
 	}
 
 	ActiveInterface = activeInterface
 
 	ip, cidr, err := getLocalNetwork()
 	if err != nil {
-		return fmt.Errorf("network not connected: %w", err)
+	    return fmt.Errorf("network not connected: %w", err)
 	}
 
 	LocalIP = ip
@@ -38,10 +38,17 @@ func Init(targetMac string) error {
 
 	ipFromMac, err := findIPFromMAC(targetMac)
 	if err != nil {
-		return fmt.Errorf("mac lookup failed: %w", err)
+	    return fmt.Errorf("mac lookup failed: %w", err)
 	}
-
 	DeviceIP = ipFromMac
+
+	if DeviceIP == "" {
+	    ipFromDirectScan, err := DirectNetworkScan(targetMac)
+	    if err != nil {
+	      return fmt.Errorf("direct network scan failed: %w", err)
+	    }
+	    DeviceIP = ipFromDirectScan
+	}
 	return nil
 }
 
@@ -118,20 +125,25 @@ func getLocalNetwork() (string, string, error) {
 }
 
 func findIPFromMAC(mac string) (string, error) {
+        fmt.Printf("[findIPFromMAC] Input MAC: %s\n", mac)
 	mac = strings.ToLower(strings.ReplaceAll(mac, "-", ":"))
-
+	fmt.Printf("[findIPFromMAC] Normalized MAC: %s\n", mac)
 	arpTable, err := readARPTable()
 	if err != nil {
 		return "", err
 	}
+	fmt.Printf("[findIPFromMAC] ARP table entries: %d\n", len(arpTable))
 
 	for ip, arpMac := range arpTable {
-		if strings.ToLower(arpMac) == mac {
-			return ip, nil
-		}
-	}
+	    fmt.Printf("[findIPFromMAC] Checking IP %s -> MAC %s\n", ip, arpMac)
+	    if strings.ToLower(arpMac) == mac {
+		fmt.Printf("[findIPFromMAC] Match found: %s -> %s\n", ip, mac)
+		return ip, nil
+	    }
+        }
 
-	return "", nil
+    fmt.Printf("[findIPFromMAC] No match found for MAC: %s\n", mac)
+    return "", nil
 }
 
 func readARPTable() (map[string]string, error) {
@@ -194,5 +206,59 @@ func parseArpOutput(r io.Reader) (map[string]string, error) {
 
     return results, scanner.Err()
 }
+
+func DirectNetworkScan(mac string) (string, error) {
+    mac = strings.ToLower(strings.ReplaceAll(mac, "-", ":"))
+
+    fmt.Printf("[DirectNetworkScan] Using subnet %s\n", CIDR)
+
+    cmd := exec.Command(
+        "nmap",
+        "-sn",
+        "-PR",
+        CIDR,
+    )
+
+    output, err := cmd.Output()
+    if err != nil {
+        return "", fmt.Errorf("nmap scan failed: %w", err)
+    }
+
+    return parseNmapARPOutput(bytes.NewReader(output), mac)
+}
+func parseNmapARPOutput(r io.Reader, targetMAC string) (string, error) {
+    scanner := bufio.NewScanner(r)
+
+    var currentIP string
+
+    for scanner.Scan() {
+        line := strings.TrimSpace(scanner.Text())
+
+        if strings.HasPrefix(line, "Nmap scan report for ") {
+            currentIP = strings.TrimPrefix(line, "Nmap scan report for ")
+            continue
+        }
+
+        if strings.HasPrefix(line, "MAC Address:") {
+            fields := strings.Fields(line)
+            if len(fields) >= 3 {
+                mac := strings.ToLower(fields[2])
+                if mac == targetMAC {
+                    fmt.Printf("[DirectNetworkScan] Match: %s → %s\n", mac, currentIP)
+                    return currentIP, nil
+                }
+            }
+        }
+    }
+
+    if err := scanner.Err(); err != nil {
+        return "", err
+    }
+
+    fmt.Printf("[DirectNetworkScan] MAC not found\n")
+    return "", nil
+}
+
+
 
 
